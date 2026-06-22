@@ -472,28 +472,44 @@ impl AgentDriverClient {
         self.call_method(AgentMethod::Disconnect, serde_json::json!({})).await
     }
 
-    pub async fn list_databases<T: DeserializeOwned + Send + 'static>(&mut self) -> Result<T, String> {
-        self.call_method(AgentMethod::ListDatabases, serde_json::json!({})).await
+    pub async fn list_databases<T: DeserializeOwned + Send + 'static>(
+        &mut self,
+        timeout_duration: Option<Duration>,
+    ) -> Result<T, String> {
+        self.call_method_with_timeout(AgentMethod::ListDatabases, serde_json::json!({}), timeout_duration).await
     }
 
-    pub async fn list_schemas<T: DeserializeOwned + Send + 'static>(&mut self, database: &str) -> Result<T, String> {
-        self.call_method(AgentMethod::ListSchemas, serde_json::json!({ "database": database })).await
+    pub async fn list_schemas<T: DeserializeOwned + Send + 'static>(
+        &mut self,
+        database: &str,
+        timeout_duration: Option<Duration>,
+    ) -> Result<T, String> {
+        self.call_method_with_timeout(
+            AgentMethod::ListSchemas,
+            serde_json::json!({ "database": database }),
+            timeout_duration,
+        )
+        .await
     }
 
     pub async fn list_tables<T: DeserializeOwned + Send + 'static>(
         &mut self,
         database: &str,
         schema: &str,
+        timeout_duration: Option<Duration>,
     ) -> Result<T, String> {
-        self.call_method(AgentMethod::ListTables, agent_schema_params(database, schema)).await
+        self.call_method_with_timeout(AgentMethod::ListTables, agent_schema_params(database, schema), timeout_duration)
+            .await
     }
 
     pub async fn list_objects<T: DeserializeOwned + Send + 'static>(
         &mut self,
         database: &str,
         schema: &str,
+        timeout_duration: Option<Duration>,
     ) -> Result<T, String> {
-        self.call_method(AgentMethod::ListObjects, agent_schema_params(database, schema)).await
+        self.call_method_with_timeout(AgentMethod::ListObjects, agent_schema_params(database, schema), timeout_duration)
+            .await
     }
 
     pub async fn get_object_source<T: DeserializeOwned + Send + 'static, K: Serialize>(
@@ -502,9 +518,14 @@ impl AgentDriverClient {
         schema: &str,
         name: &str,
         object_type: &K,
+        timeout_duration: Option<Duration>,
     ) -> Result<T, String> {
-        self.call_method(AgentMethod::GetObjectSource, agent_object_source_params(database, schema, name, object_type))
-            .await
+        self.call_method_with_timeout(
+            AgentMethod::GetObjectSource,
+            agent_object_source_params(database, schema, name, object_type),
+            timeout_duration,
+        )
+        .await
     }
 
     pub async fn get_columns<T: DeserializeOwned + Send + 'static>(
@@ -512,8 +533,14 @@ impl AgentDriverClient {
         database: &str,
         schema: &str,
         table: &str,
+        timeout_duration: Option<Duration>,
     ) -> Result<T, String> {
-        self.call_method(AgentMethod::GetColumns, agent_schema_table_params(database, schema, table)).await
+        self.call_method_with_timeout(
+            AgentMethod::GetColumns,
+            agent_schema_table_params(database, schema, table),
+            timeout_duration,
+        )
+        .await
     }
 
     pub async fn list_indexes<T: DeserializeOwned + Send + 'static>(
@@ -521,8 +548,14 @@ impl AgentDriverClient {
         database: &str,
         schema: &str,
         table: &str,
+        timeout_duration: Option<Duration>,
     ) -> Result<T, String> {
-        self.call_method(AgentMethod::ListIndexes, agent_schema_table_params(database, schema, table)).await
+        self.call_method_with_timeout(
+            AgentMethod::ListIndexes,
+            agent_schema_table_params(database, schema, table),
+            timeout_duration,
+        )
+        .await
     }
 
     pub async fn list_foreign_keys<T: DeserializeOwned + Send + 'static>(
@@ -530,8 +563,14 @@ impl AgentDriverClient {
         database: &str,
         schema: &str,
         table: &str,
+        timeout_duration: Option<Duration>,
     ) -> Result<T, String> {
-        self.call_method(AgentMethod::ListForeignKeys, agent_schema_table_params(database, schema, table)).await
+        self.call_method_with_timeout(
+            AgentMethod::ListForeignKeys,
+            agent_schema_table_params(database, schema, table),
+            timeout_duration,
+        )
+        .await
     }
 
     pub async fn list_triggers<T: DeserializeOwned + Send + 'static>(
@@ -539,8 +578,14 @@ impl AgentDriverClient {
         database: &str,
         schema: &str,
         table: &str,
+        timeout_duration: Option<Duration>,
     ) -> Result<T, String> {
-        self.call_method(AgentMethod::ListTriggers, agent_schema_table_params(database, schema, table)).await
+        self.call_method_with_timeout(
+            AgentMethod::ListTriggers,
+            agent_schema_table_params(database, schema, table),
+            timeout_duration,
+        )
+        .await
     }
 
     pub async fn get_table_ddl<T: DeserializeOwned + Send + 'static>(
@@ -548,8 +593,14 @@ impl AgentDriverClient {
         database: &str,
         schema: &str,
         table: &str,
+        timeout_duration: Option<Duration>,
     ) -> Result<T, String> {
-        self.call_method(AgentMethod::GetTableDdl, agent_schema_table_params(database, schema, table)).await
+        self.call_method_with_timeout(
+            AgentMethod::GetTableDdl,
+            agent_schema_table_params(database, schema, table),
+            timeout_duration,
+        )
+        .await
     }
 
     pub async fn execute_query<T: DeserializeOwned + Send + 'static>(&mut self, params: Value) -> Result<T, String> {
