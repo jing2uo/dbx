@@ -58,7 +58,7 @@ export type DesktopIconTheme = "default" | "black";
 
 export type InterfaceLayout = "separated" | "classic";
 
-export type UpdateDownloadSource = "github" | "cnb";
+export type UpdateDownloadSource = "official" | "cnb";
 
 export const DEFAULT_SIDEBAR_TABLE_PAGE_SIZE = 1000;
 
@@ -465,7 +465,7 @@ export const DEFAULT_EDITOR_SETTINGS: EditorSettings = {
   exportRowLimitEnabled: false,
   exportRowLimit: 100000,
   queryExportKeysetOptimizationEnabled: true,
-  updateDownloadSource: "github",
+  updateDownloadSource: "official",
   toolbarItems: { ...DEFAULT_TOOLBAR_ITEMS },
 };
 

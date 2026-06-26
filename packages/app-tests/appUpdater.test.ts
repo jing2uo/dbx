@@ -32,9 +32,9 @@ test("blocks in-app update installation outside desktop runtime or without an up
 });
 
 test("normalizes update download source", () => {
-  assert.equal(normalizeUpdateDownloadSource("github"), "github");
+  assert.equal(normalizeUpdateDownloadSource("official"), "official");
   assert.equal(normalizeUpdateDownloadSource("cnb"), "cnb");
-  assert.equal(normalizeUpdateDownloadSource("unknown"), "github");
+  assert.equal(normalizeUpdateDownloadSource("unknown"), "official");
 });
 
 test("normalizes release tag versions", () => {
@@ -45,6 +45,6 @@ test("normalizes release tag versions", () => {
 test("resolves release page URL from update download source", () => {
   const fallbackUrl = "https://github.com/t8y2/dbx/releases/latest";
   assert.equal(resolveUpdateReleaseUrl(updateInfo({ latest_version: "0.5.39" }), "cnb", fallbackUrl), "https://cnb.cool/dbxio.com/dbx/-/releases/tag/v0.5.39");
-  assert.equal(resolveUpdateReleaseUrl(updateInfo({ release_url: "https://github.com/t8y2/dbx/releases/tag/v0.5.39" }), "github", fallbackUrl), "https://github.com/t8y2/dbx/releases/tag/v0.5.39");
+  assert.equal(resolveUpdateReleaseUrl(updateInfo({ release_url: "https://github.com/t8y2/dbx/releases/tag/v0.5.39" }), "official", fallbackUrl), "https://github.com/t8y2/dbx/releases/tag/v0.5.39");
   assert.equal(resolveUpdateReleaseUrl(null, "cnb", fallbackUrl), fallbackUrl);
 });

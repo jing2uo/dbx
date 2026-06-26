@@ -16,7 +16,7 @@ export function canDownloadAndInstallUpdate(info: api.UpdateInfo | null, isDeskt
 }
 
 export function normalizeUpdateDownloadSource(value: unknown): SettingsUpdateDownloadSource {
-  return value === "cnb" ? "cnb" : "github";
+  return value === "cnb" ? "cnb" : "official";
 }
 
 export function tagVersion(version: string): string {

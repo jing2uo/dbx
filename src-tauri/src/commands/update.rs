@@ -8,7 +8,10 @@ use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Emitter};
 use tauri_plugin_updater::UpdaterExt;
 
-const GITHUB_UPDATE_ENDPOINT: &str = "https://github.com/t8y2/dbx/releases/latest/download/latest.json";
+const OFFICIAL_UPDATE_ENDPOINTS: [&str; 2] = [
+    "https://dl.dbxio.com/releases/latest/latest.json",
+    "https://github.com/t8y2/dbx/releases/latest/download/latest.json",
+];
 const CNB_RELEASE_DOWNLOAD_PREFIX: &str = "https://cnb.cool/dbxio.com/dbx/-/releases/download/";
 const GITHUB_RELEASE_DOWNLOAD_PREFIX: &str = "https://github.com/t8y2/dbx/releases/download/";
 const UPDATE_DOWNLOAD_PROGRESS_EVENT: &str = "update-download-progress";
@@ -16,7 +19,7 @@ const UPDATE_DOWNLOAD_PROGRESS_EVENT: &str = "update-download-progress";
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum UpdateDownloadSource {
-    Github,
+    Official,
     Cnb,
 }
 
@@ -29,24 +32,28 @@ pub struct UpdateDownloadProgress {
 impl UpdateDownloadSource {
     fn label(&self) -> &'static str {
         match self {
-            Self::Github => "github",
+            Self::Official => "official",
             Self::Cnb => "cnb",
         }
     }
 
-    fn endpoint(&self, latest_version: Option<&str>) -> Result<String, String> {
+    fn endpoints(&self, latest_version: Option<&str>) -> Result<Vec<String>, String> {
         match self {
-            Self::Github => Ok(GITHUB_UPDATE_ENDPOINT.to_string()),
+            Self::Official => Ok(OFFICIAL_UPDATE_ENDPOINTS.iter().map(|endpoint| endpoint.to_string()).collect()),
             Self::Cnb => {
                 let version =
                     latest_version.ok_or_else(|| "Latest version is required for CNB updates.".to_string())?;
-                Ok(format!("{CNB_RELEASE_DOWNLOAD_PREFIX}{}/latest.json", tag_version(version)))
+                Ok(vec![format!("{CNB_RELEASE_DOWNLOAD_PREFIX}{}/latest.json", tag_version(version))])
             }
         }
     }
 
     fn rewrite_download_url(&self, url: &str) -> Result<Option<String>, String> {
         if !matches!(self, Self::Cnb) {
+            return Ok(None);
+        }
+
+        if url.starts_with(CNB_RELEASE_DOWNLOAD_PREFIX) {
             return Ok(None);
         }
 
@@ -91,13 +98,14 @@ pub async fn download_and_install_update(
         return Err("Portable builds cannot use the in-app installer.".to_string());
     }
 
-    let endpoint = source.endpoint(latest_version.as_deref())?;
-    println!("[DBX updater] checking from {} endpoint: {}", source.label(), endpoint);
-    let endpoint = endpoint.parse().map_err(|e| format!("Invalid update endpoint: {e}"))?;
-    let mut builder = app
-        .updater_builder()
-        .endpoints(vec![endpoint])
-        .map_err(|e| format!("Failed to configure updater endpoint: {e}"))?;
+    let endpoint_urls = source.endpoints(latest_version.as_deref())?;
+    println!("[DBX updater] checking from {} endpoints: {}", source.label(), endpoint_urls.join(", "));
+    let mut endpoints = Vec::with_capacity(endpoint_urls.len());
+    for endpoint_url in endpoint_urls {
+        endpoints.push(endpoint_url.parse().map_err(|e| format!("Invalid update endpoint: {e}"))?);
+    }
+    let mut builder =
+        app.updater_builder().endpoints(endpoints).map_err(|e| format!("Failed to configure updater endpoint: {e}"))?;
 
     if let Some(proxy_url) = dbx_core::update::system_proxy_url() {
         let proxy = proxy_url.parse().map_err(|e| format!("Invalid system proxy URL: {e}"))?;
@@ -137,7 +145,7 @@ pub async fn download_and_install_update(
 
 #[cfg(test)]
 mod tests {
-    use super::{tag_version, UpdateDownloadSource, CNB_RELEASE_DOWNLOAD_PREFIX};
+    use super::{tag_version, UpdateDownloadSource, CNB_RELEASE_DOWNLOAD_PREFIX, OFFICIAL_UPDATE_ENDPOINTS};
 
     #[test]
     fn normalizes_update_tag_versions() {
@@ -146,9 +154,15 @@ mod tests {
     }
 
     #[test]
+    fn builds_official_update_endpoints() {
+        let endpoints = UpdateDownloadSource::Official.endpoints(None).unwrap();
+        assert_eq!(endpoints, OFFICIAL_UPDATE_ENDPOINTS);
+    }
+
+    #[test]
     fn builds_cnb_update_endpoint_for_tag() {
-        let endpoint = UpdateDownloadSource::Cnb.endpoint(Some("0.5.39")).unwrap();
-        assert_eq!(endpoint, format!("{CNB_RELEASE_DOWNLOAD_PREFIX}v0.5.39/latest.json"));
+        let endpoints = UpdateDownloadSource::Cnb.endpoints(Some("0.5.39")).unwrap();
+        assert_eq!(endpoints, vec![format!("{CNB_RELEASE_DOWNLOAD_PREFIX}v0.5.39/latest.json")]);
     }
 
     #[test]
@@ -158,5 +172,13 @@ mod tests {
             .unwrap()
             .unwrap();
         assert_eq!(download_url, "https://cnb.cool/dbxio.com/dbx/-/releases/download/v0.5.39/DBX_0.5.39_aarch64.dmg");
+    }
+
+    #[test]
+    fn accepts_existing_cnb_asset_url() {
+        let download_url = UpdateDownloadSource::Cnb
+            .rewrite_download_url("https://cnb.cool/dbxio.com/dbx/-/releases/download/v0.5.39/DBX_0.5.39_aarch64.dmg")
+            .unwrap();
+        assert_eq!(download_url, None);
     }
 }
