@@ -35,7 +35,6 @@ Each agent runs as a standalone process and communicates with DBX via stdin/stdo
 | bigquery | Google BigQuery | BigQuery JDBC |
 | kylin | Apache Kylin | Kylin JDBC |
 | sundb | SunDB | SunDB JDBC |
-| gaussdb | GaussDB | GaussDB JDBC |
 | tdengine | TDengine | taos-jdbcdriver (WebSocket, REST fallback) |
 | yashandb | 崖山 YashanDB | YashanDB JDBC |
 | xugu | 虚谷 XuguDB | XuguDB Go native agent |

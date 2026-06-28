@@ -20,7 +20,6 @@ JDBC_ARCHITECTURE_ALLOWLIST = {
     "access": "custom Access metadata and URL behavior pending migration",
     "dameng": "custom Dameng metadata and DDL pending migration",
     "db2": "custom DB2 metadata pending migration",
-    "gaussdb": "custom GaussDB metadata pending migration",
     "gbase8s": "custom GBase 8s metadata pending migration",
     "goldendb": "custom GoldenDB metadata pending migration",
     "informix": "custom Informix metadata pending migration",
