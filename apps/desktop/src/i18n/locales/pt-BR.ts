@@ -3179,7 +3179,6 @@ export default withEnglishFallback({
     mcpNpmBoundary: "O DBX apenas verifica e explica o status do MCP; a instalação e as atualizações ainda são feitas pelo npm.",
     mcpRefresh: "Verificar novamente",
     mcpGuide: "Guia do MCP",
-    aboutDescription: "Uma ferramenta de gerenciamento de banco de dados leve e de código aberto.",
     supportInfoTitle: "Informações de suporte",
     supportInfoDescription: "Copie estes detalhes do ambiente ao abrir issues ou pedir ajuda.",
     supportInfoCopy: "Copiar informações",

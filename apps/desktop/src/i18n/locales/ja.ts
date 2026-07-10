@@ -3178,7 +3178,6 @@ export default withEnglishFallback({
     exportRowLimitUnlimited: "無制限",
     queryExportKeysetOptimizationEnabled: "キーセット最適化を試行",
     queryExportKeysetOptimizationEnabledDescription: "安全に認識された単一テーブルクエリにのみ適用。複雑なクエリは自動的にフォールバックします。",
-    aboutDescription: "オープンソースの軽量データベース管理ツール。",
     supportInfoTitle: "サポート情報",
     supportInfoDescription: "Issueの作成や問い合わせ時に、この環境情報をコピーできます。",
     supportInfoCopy: "サポート情報をコピー",

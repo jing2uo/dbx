@@ -3279,7 +3279,6 @@ export default {
     mcpNpmBoundary: "DBX only checks and explains MCP status; installation and upgrades still run through npm.",
     mcpRefresh: "Check again",
     mcpGuide: "MCP guide",
-    aboutDescription: "An open-source, lightweight database management tool.",
     supportInfoTitle: "Support information",
     supportInfoDescription: "Copy these environment details when filing issues or asking for help.",
     supportInfoCopy: "Copy support info",

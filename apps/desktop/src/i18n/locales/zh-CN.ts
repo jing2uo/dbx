@@ -3281,7 +3281,6 @@ export default withEnglishFallback({
     mcpNpmBoundary: "DBX 只检测和提示 MCP 状态；安装与升级仍由 npm 完成。",
     mcpRefresh: "重新检查",
     mcpGuide: "MCP 指南",
-    aboutDescription: "开源、轻量的数据库管理工具。",
     supportInfoTitle: "支持信息",
     supportInfoDescription: "提交 issue 或寻求帮助时，可复制这些环境信息。",
     supportInfoCopy: "复制支持信息",

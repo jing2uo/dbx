@@ -2979,7 +2979,6 @@ export default withEnglishFallback({
     jdbcImportSuccess: "已匯入 {count} 個驅動程式檔",
     jdbcDeleteSuccess: "驅動程式已刪除",
     jdbcNoDrivers: "還沒有匯入 JDBC 驅動程式。",
-    aboutDescription: "開源、輕量的資料庫管理工具。",
     supportInfoTitle: "支援資訊",
     supportInfoDescription: "提交 issue 或尋求協助時，可複製這些環境資訊。",
     supportInfoCopy: "複製支援資訊",
