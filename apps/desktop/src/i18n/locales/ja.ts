@@ -559,6 +559,7 @@ export default withEnglishFallback({
     users: "ユーザーと権限",
     executionSummary: "サマリー",
     tooltipTitle: "タイトル:",
+    tooltipFilePath: "ファイルパス:",
     tooltipConnection: "接続:",
     tooltipDatabase: "データベース:",
     tooltipTable: "テーブル:",

@@ -562,6 +562,7 @@ export default withEnglishFallback({
     users: "Usuários e Privilégios",
     executionSummary: "Resumo",
     tooltipTitle: "Título:",
+    tooltipFilePath: "Caminho do arquivo:",
     tooltipConnection: "Conexão:",
     tooltipDatabase: "Banco de dados:",
     tooltipTable: "Tabela:",

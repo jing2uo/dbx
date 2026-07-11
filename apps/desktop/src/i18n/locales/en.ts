@@ -581,6 +581,7 @@ export default {
     users: "Users & Privileges",
     executionSummary: "Summary",
     tooltipTitle: "Title:",
+    tooltipFilePath: "File Path:",
     tooltipConnection: "Connection:",
     tooltipDatabase: "Database:",
     tooltipTable: "Table:",

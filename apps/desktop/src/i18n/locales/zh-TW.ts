@@ -561,6 +561,7 @@ export default withEnglishFallback({
     users: "使用者與權限",
     executionSummary: "摘要",
     tooltipTitle: "標題：",
+    tooltipFilePath: "檔案路徑：",
     tooltipConnection: "連線：",
     tooltipDatabase: "資料庫：",
     tooltipTable: "資料表：",

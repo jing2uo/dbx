@@ -582,6 +582,7 @@ export default withEnglishFallback({
     users: "用户与权限",
     executionSummary: "摘要",
     tooltipTitle: "标题：",
+    tooltipFilePath: "文件路径：",
     tooltipConnection: "连接：",
     tooltipDatabase: "数据库：",
     tooltipTable: "表：",

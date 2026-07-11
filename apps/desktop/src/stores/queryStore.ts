@@ -41,6 +41,7 @@ import { queryResultSourceLabel } from "@/lib/sql/queryResultSource";
 import { sortDataGridRowIndexes, type DataGridSortDirection } from "@/lib/dataGrid/dataGridSort";
 import { normalizeResultPageSize } from "@/lib/dataGrid/paginationPageSize";
 import { splitSqlStatementRanges } from "@/lib/sql/sqlStatementRanges";
+import { externalSqlFileDisplayTitles, normalizeExternalSqlPath } from "@/lib/sql/sqlFileOpen";
 import { clearDataGridPendingSnapshotsForTab } from "@/composables/useDataGridEditor";
 import { buildTabResultSnapshot, deleteTabResultSnapshot, readTabResultSnapshot, tabResultCacheKey, writeTabResultSnapshot } from "@/lib/tabs/tabResultCache";
 import { queryResultBaseSql, queryResultExecutionSql } from "@/lib/tabs/tabPresentation";
@@ -873,6 +874,46 @@ export const useQueryStore = defineStore("query", () => {
     return id;
   }
 
+  function refreshExternalSqlFileTitles() {
+    const externalTabs = tabs.value.filter((tab) => tab.mode === "query" && tab.externalSqlPath);
+    const titles = externalSqlFileDisplayTitles(externalTabs.map((tab) => tab.externalSqlPath!));
+    externalTabs.forEach((tab, index) => {
+      tab.title = titles[index];
+      tab.customTitle = true;
+    });
+  }
+
+  function openExternalSqlFile(connectionId: string, database: string, path: string, sql: string) {
+    const normalizedPath = normalizeExternalSqlPath(path);
+    const existing = tabs.value.find((tab) => tab.mode === "query" && tab.externalSqlPath && normalizeExternalSqlPath(tab.externalSqlPath) === normalizedPath);
+    if (existing) {
+      switchTab(existing.id);
+      return existing.id;
+    }
+
+    // File-backed tabs are identified by their full path, not their basename.
+    // Bypassing createTab avoids overwriting another file with the same name.
+    const id = uuid();
+    const tab: QueryTab = {
+      id,
+      title: "",
+      customTitle: true,
+      connectionId,
+      database,
+      sql,
+      originalSql: sql,
+      externalSqlPath: path,
+      isExecuting: false,
+      isCancelling: false,
+      isExplaining: false,
+      mode: "query",
+    };
+    tabs.value.push(tab);
+    activeTabId.value = id;
+    refreshExternalSqlFileTitles();
+    return id;
+  }
+
   function openObjectBrowser(connectionId: string, database: string, schema?: string, catalog?: string) {
     const title = catalog ? `${catalog}.${database} objects` : schema ? `${schema} objects` : `${database} objects`;
     const existing = tabs.value.find((tab) => tab.mode === "objects" && tab.connectionId === connectionId && tab.database === database && (tab.objectBrowser?.catalog || "") === (catalog || "") && (tab.objectBrowser?.schema || "") === (schema || ""));
@@ -1257,6 +1298,7 @@ export const useQueryStore = defineStore("query", () => {
     clearResultRunSnapshots(tabs.value[idx]);
     clearResultPayload(tabs.value[idx]);
     tabs.value.splice(idx, 1);
+    if (tab.externalSqlPath) refreshExternalSqlFileTitles();
     if (activeTabId.value === id) {
       activeTabId.value = fallbackActiveTabAfterClose(id, idx);
     }
@@ -1749,6 +1791,7 @@ export const useQueryStore = defineStore("query", () => {
       tab.customTitle = true;
     }
     markTabClean(tab);
+    refreshExternalSqlFileTitles();
   }
 
   function openSavedSql(file: SavedSqlFile) {
@@ -3585,6 +3628,7 @@ export const useQueryStore = defineStore("query", () => {
     openTableStructure,
     linkSavedSql,
     linkExternalSqlPath,
+    openExternalSqlFile,
     openSavedSql,
     hydrateSavedSqlTabs,
     togglePinnedTab,
